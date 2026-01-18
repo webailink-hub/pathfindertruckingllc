@@ -46,6 +46,33 @@
         body { font-family: 'Inter', sans-serif; }
         /* Smooth scrolling */
         html { scroll-behavior: smooth; }
+        
+        /* Animation for the map nodes */
+        @keyframes pulse-ring {
+            0% { transform: scale(0.33); opacity: 1; }
+            80%, 100% { opacity: 0; }
+        }
+        @keyframes pulse-dot {
+            0% { transform: scale(0.8); }
+            50% { transform: scale(1); }
+            100% { transform: scale(0.8); }
+        }
+        .map-node-pulse {
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            background-color: rgba(245, 158, 11, 0.4);
+            border-radius: 50%;
+            animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+        }
+        .map-node-dot {
+            position: relative;
+            width: 12px;
+            height: 12px;
+            background-color: #d97706;
+            border-radius: 50%;
+            animation: pulse-dot 2s cubic-bezier(0.455, 0.03, 0.515, 0.955) -.4s infinite;
+        }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-900">
@@ -100,21 +127,37 @@
             )
         };
 
+        // --- Logo Component ---
+        const Logo = ({ className }) => (
+            <div className={`flex items-center ${className}`}>
+                <img 
+                    src="Gemini_Generated_Image_mhuorqmhuorqmhuo (2).jpg" 
+                    alt="Pathfinder Truckers" 
+                    className="h-12 w-auto object-contain mr-3 rounded-lg shadow-sm"
+                    onError={(e) => {
+                        e.target.style.display = 'none';
+                        e.target.nextSibling.style.display = 'flex';
+                    }}
+                />
+                <div className="hidden flex items-center bg-amber-500 p-2 rounded-lg mr-3">
+                    <Icons.Navigation className="h-6 w-6 text-slate-900" />
+                </div>
+                <span className="font-bold text-xl tracking-wider uppercase">Pathfinder <span className="text-amber-500">Truckers</span></span>
+            </div>
+        );
+
         // --- Components ---
 
         const Navbar = ({ setCurrentPage, mobileMenuOpen, setMobileMenuOpen }) => (
             <nav className="bg-slate-900 text-white sticky top-0 z-50 shadow-lg">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between items-center h-20">
-                    {/* Logo */}
+                    {/* Logo Area */}
                     <div 
-                    className="flex items-center cursor-pointer group" 
-                    onClick={() => setCurrentPage('home')}
+                        className="cursor-pointer group" 
+                        onClick={() => setCurrentPage('home')}
                     >
-                    <div className="bg-amber-500 p-2 rounded-lg mr-3 group-hover:bg-amber-400 transition-colors">
-                        <Icons.Navigation className="h-6 w-6 text-slate-900" />
-                    </div>
-                    <span className="font-bold text-xl tracking-wider uppercase">Pathfinder <span className="text-amber-500">Truckers</span></span>
+                        <Logo />
                     </div>
 
                     {/* Desktop Menu */}
@@ -190,6 +233,11 @@
                 </div>
                 </div>
                 
+                {/* Logo Area in Hero */}
+                <div className="hidden lg:flex absolute right-20 top-1/2 transform -translate-y-1/2 opacity-10">
+                    <img src="Gemini_Generated_Image_mhuorqmhuorqmhuo (2).jpg" className="w-96 h-auto" alt="Pathfinder Watermark" />
+                </div>
+
                 {/* Abstract Truck Graphic Suggestion */}
                 <div className="hidden lg:block absolute right-0 bottom-0 h-full w-1/3 bg-slate-800/50 skew-x-[-12deg] translate-x-20 border-l border-slate-700"></div>
             </div>
@@ -237,6 +285,61 @@
             </div>
         );
 
+        const ServiceMap = () => (
+            <div className="py-20 bg-slate-900 text-white overflow-hidden relative">
+                 <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                        <div>
+                            <div className="inline-flex items-center px-3 py-1 rounded-full bg-amber-500/20 text-amber-400 text-sm font-semibold mb-6">
+                                <Icons.MapPin className="w-4 h-4 mr-2" />
+                                Coverage Area
+                            </div>
+                            <h2 className="text-3xl font-extrabold mb-6">Mastering the Western Corridor</h2>
+                            <p className="text-slate-300 text-lg mb-8 leading-relaxed">
+                                We specialize in high-efficiency lanes across the Western United States. Our dedicated fleet ensures seamless connectivity between major hubs in 
+                                <span className="text-amber-400 font-bold"> California</span>, 
+                                <span className="text-amber-400 font-bold"> Nevada</span>, 
+                                <span className="text-amber-400 font-bold"> Oregon</span>, and 
+                                <span className="text-amber-400 font-bold"> Arizona</span>.
+                            </p>
+                            
+                            <ul className="space-y-4">
+                                {[
+                                    { state: "California" },
+                                    { state: "Nevada" },
+                                    { state: "Arizona" },
+                                    { state: "Oregon" }
+                                ].map((item, idx) => (
+                                    <li key={idx} className="flex items-center">
+                                        <div className="flex-shrink-0 h-6 w-6 rounded-full bg-amber-500 flex items-center justify-center">
+                                            <Icons.CheckCircle className="h-4 w-4 text-slate-900" />
+                                        </div>
+                                        <div className="ml-4">
+                                            <h4 className="text-lg font-bold text-white">{item.state}</h4>
+                                        </div>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                        
+                        {/* Image Placeholder for Service Region */}
+                        <div className="relative bg-slate-800 rounded-2xl shadow-2xl border border-slate-700 h-[400px] flex items-center justify-center overflow-hidden group">
+                            {/* This div simulates an image placeholder. Replace with <img src="..." /> when you have the map image. */}
+                            <div className="absolute inset-0 bg-slate-800 flex flex-col items-center justify-center text-slate-500 group-hover:bg-slate-750 transition-colors cursor-pointer">
+                                <Icons.MapPin className="h-20 w-20 mb-4 text-slate-600 group-hover:text-amber-500 transition-colors" />
+                                <span className="text-xl font-bold uppercase tracking-wider">Service Map Region</span>
+                                <span className="text-sm mt-2">1200 x 800 Placeholder</span>
+                            </div>
+                            
+                            {/* Optional: If you want to use an actual image tag as a placeholder using the uploaded image temporarily or a placeholder service */}
+                            {/* <img src="your-map-image.jpg" alt="Western US Service Map" className="w-full h-full object-cover" /> */}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+
         const ServicesList = () => (
             <div className="py-20 bg-slate-50">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -250,7 +353,7 @@
                     { title: "Full Truckload (FTL)", icon: <Icons.Truck />, desc: "Dedicated capacity for large shipments requiring exclusive trailer use across North America." },
                     { title: "Less Than Truckload (LTL)", icon: <Icons.Package />, desc: "Cost-effective solutions for smaller shipments that don't require a full trailer." },
                     { title: "Expedited Shipping", icon: <Icons.Clock />, desc: "Time-critical delivery services with team drivers for non-stop transit." },
-                    { title: "Refrigerated Transport", icon: <Icons.Award />, desc: "Temperature-controlled units for sensitive food, medical, and chemical cargo." },
+                    // Removed Refrigerated Transport
                     { title: "Flatbed & Heavy Haul", icon: <Icons.Navigation />, desc: "Specialized equipment for oversized, irregularly shaped, or heavy machinery." },
                     { title: "Logistics Consulting", icon: <Icons.MapPin />, desc: "Expert analysis of your supply chain to optimize routes and reduce costs." }
                     ].map((service, idx) => (
@@ -321,7 +424,17 @@
                 <div className="bg-slate-50 py-12 px-4 sm:px-6 lg:px-8">
                 <div className="max-w-3xl mx-auto">
                     <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10 border border-slate-200">
-                    <div className="mb-8 border-b border-slate-200 pb-6">
+                    
+                    {/* Added Logo Placeholder to Form Header */}
+                    <div className="flex justify-center mb-6">
+                        <img 
+                            src="Gemini_Generated_Image_mhuorqmhuorqmhuo (2).jpg" 
+                            alt="Pathfinder Truckers Logo" 
+                            className="h-16 w-auto object-contain"
+                        />
+                    </div>
+
+                    <div className="mb-8 border-b border-slate-200 pb-6 text-center">
                         <h2 className="text-2xl font-bold text-slate-900">Service Requisition Form</h2>
                         <p className="mt-1 text-sm text-slate-500">Please provide detailed information about your freight needs so we can provide an accurate quote and timeline.</p>
                     </div>
@@ -360,7 +473,7 @@
                                 <option>Full Truckload (FTL)</option>
                                 <option>Less Than Truckload (LTL)</option>
                                 <option>Expedited</option>
-                                <option>Refrigerated</option>
+                                {/* Removed Refrigerated */}
                                 <option>Flatbed/Specialized</option>
                             </select>
                             </div>
@@ -378,11 +491,11 @@
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
                                     <label htmlFor="pickupLocation" className="block text-sm font-medium text-slate-700">Pickup Location (City, State, Zip)</label>
-                                    <input required type="text" name="pickupLocation" value={formData.pickupLocation} onChange={handleChange} placeholder="e.g. Dallas, TX 75201" className="mt-1 block w-full border border-slate-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-amber-500 focus:border-amber-500 sm:text-sm" />
+                                    <input required type="text" name="pickupLocation" value={formData.pickupLocation} onChange={handleChange} placeholder="e.g. Las Vegas, NV" className="mt-1 block w-full border border-slate-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-amber-500 focus:border-amber-500 sm:text-sm" />
                                 </div>
                                 <div>
                                     <label htmlFor="deliveryLocation" className="block text-sm font-medium text-slate-700">Delivery Location (City, State, Zip)</label>
-                                    <input required type="text" name="deliveryLocation" value={formData.deliveryLocation} onChange={handleChange} placeholder="e.g. Chicago, IL 60601" className="mt-1 block w-full border border-slate-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-amber-500 focus:border-amber-500 sm:text-sm" />
+                                    <input required type="text" name="deliveryLocation" value={formData.deliveryLocation} onChange={handleChange} placeholder="e.g. Phoenix, AZ" className="mt-1 block w-full border border-slate-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-amber-500 focus:border-amber-500 sm:text-sm" />
                                 </div>
                             </div>
                             </div>
@@ -455,17 +568,19 @@
                     </div>
                     </div>
                     <div className="bg-slate-100 rounded-2xl h-96 flex items-center justify-center relative overflow-hidden">
-                    {/* Abstract visualization of a map/path */}
-                    <div className="absolute inset-0 bg-slate-200">
-                        <svg className="h-full w-full opacity-20" viewBox="0 0 100 100" preserveAspectRatio="none">
-                        <path d="M0 100 C 20 0 50 0 100 100 Z" fill="none" stroke="currentColor" strokeWidth="2" />
-                        <path d="M0 0 L 100 100" stroke="currentColor" strokeWidth="1" strokeDasharray="4 4"/>
-                        </svg>
-                    </div>
-                    <div className="z-10 text-center">
-                        <Icons.Truck className="h-24 w-24 text-slate-400 mx-auto mb-4" />
-                        <span className="text-slate-500 font-medium">Pathfinder Logistics Hub</span>
-                    </div>
+                        {/* Logo centered in about section */}
+                        <div className="z-10 text-center">
+                            <img src="Gemini_Generated_Image_mhuorqmhuorqmhuo (2).jpg" alt="Pathfinder Logo" className="h-32 w-auto mx-auto mb-4 rounded-xl shadow-lg" />
+                            <span className="text-slate-500 font-medium block mt-4">Pathfinder Logistics Hub</span>
+                        </div>
+                        
+                        {/* Abstract visualization of a map/path */}
+                        <div className="absolute inset-0 bg-slate-200 -z-1">
+                            <svg className="h-full w-full opacity-20" viewBox="0 0 100 100" preserveAspectRatio="none">
+                                <path d="M0 100 C 20 0 50 0 100 100 Z" fill="none" stroke="currentColor" strokeWidth="2" />
+                                <path d="M0 0 L 100 100" stroke="currentColor" strokeWidth="1" strokeDasharray="4 4"/>
+                            </svg>
+                        </div>
                     </div>
                 </div>
                 </div>
@@ -477,8 +592,8 @@
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
                     <div className="col-span-1 md:col-span-1">
-                    <div className="flex items-center mb-4">
-                        <Icons.Navigation className="h-6 w-6 text-amber-500 mr-2" />
+                    <div className="flex items-center mb-4 cursor-pointer" onClick={() => setCurrentPage('home')}>
+                        <img src="Gemini_Generated_Image_mhuorqmhuorqmhuo (2).jpg" alt="Pathfinder Logo" className="h-8 w-auto mr-2 rounded" />
                         <span className="font-bold text-xl uppercase">Pathfinder</span>
                     </div>
                     <p className="text-slate-400 text-sm">
@@ -500,8 +615,8 @@
                     <h4 className="text-lg font-bold mb-4 text-amber-500">Services</h4>
                     <ul className="space-y-2 text-slate-300 text-sm">
                         <li>FTL & LTL Shipping</li>
-                        <li>Refrigerated Transport</li>
                         <li>Expedited Logistics</li>
+                        <li>Flatbed Transport</li>
                         <li>Warehousing Solutions</li>
                     </ul>
                     </div>
@@ -509,7 +624,7 @@
                     <div>
                     <h4 className="text-lg font-bold mb-4 text-amber-500">Contact</h4>
                     <ul className="space-y-3 text-slate-300 text-sm">
-                        <li className="flex items-start"><Icons.MapPin className="h-5 w-5 mr-2 text-amber-600 flex-shrink-0" /> 1234 Logistics Blvd, Suite 100<br/>Dallas, TX 75001</li>
+                        <li className="flex items-start"><Icons.MapPin className="h-5 w-5 mr-2 text-amber-600 flex-shrink-0" /> 1234 Logistics Blvd, Suite 100<br/>Las Vegas, NV 89101</li>
                         <li className="flex items-center"><Icons.Phone className="h-5 w-5 mr-2 text-amber-600 flex-shrink-0" /> (555) 123-4567</li>
                         <li className="flex items-center"><Icons.Mail className="h-5 w-5 mr-2 text-amber-600 flex-shrink-0" /> dispatch@pathfindertruckers.com</li>
                     </ul>
@@ -536,6 +651,7 @@
                     return (
                     <React.Fragment>
                         <Hero setCurrentPage={setCurrentPage} />
+                        <ServiceMap />
                         <Features />
                         <ServicesList />
                         {/* Mini CTA Section */}
@@ -560,6 +676,7 @@
                         <h1 className="text-4xl font-bold">Our Services</h1>
                         <p className="mt-2 text-slate-400">Comprehensive logistics solutions tailored to your needs.</p>
                         </div>
+                        <ServiceMap />
                         <ServicesList />
                         <div className="py-16 bg-white text-center">
                         <h2 className="text-2xl font-bold text-slate-900 mb-6">Need something specific?</h2>
